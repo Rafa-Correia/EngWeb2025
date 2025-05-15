@@ -3,11 +3,40 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const {v4: uuidv4} = require('uuid')
+var session = require('express-session')
+var passport = require('passport')
+var LocalStrategy = require('passport-local').Strategy
+
+// Connect to MongoDB
+var mongoDB = 'mongodb://localhost:27017/engweb2025'
+mongoose.connect(mongoDB)
+var conn = mongoose.connection
+conn.on('error', console.error.bind(console, 'MongoDB connection error:'));
+conn.once('open', () => console.log('Connected to MongoDB'));
+
+// passport config
+var user = require('./models/user')
+passport.use(new LocalStrategy(user.authenticate()))
+passport.serializeUser(user.serializeUser())
+passport.deserializeUser(user.deserializeUser())
+
+var userRouter = require('./routes/user');
+
+var mongoose = require('mongoose');
 
 var app = express();
+
+app.use(session({
+  genid: req => {
+    return uuidv4()
+  },
+  secret: 'EngWeb2025',
+  resave: false,
+  saveUninitialized: true
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,8 +48,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
