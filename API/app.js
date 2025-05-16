@@ -24,8 +24,10 @@ passport.serializeUser(user.serializeUser())
 passport.deserializeUser(user.deserializeUser())
 
 var userRouter = require('./routes/user');
+var itemRouter = require('./routes/item')
 
 var mongoose = require('mongoose');
+const item = require('./models/item');
 
 var app = express();
 
@@ -48,7 +50,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/items', itemRouter);
 app.use('/', userRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

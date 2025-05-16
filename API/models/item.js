@@ -6,11 +6,7 @@ var itemSchema = new mongoose.Schema({
     type: { type: String, required: true },
     file : String,
     creationDate: { type: Date, default: Date.now },
-    owner :  {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
-        required: true
-    },
+    owner : String,
     metadata : mongoose.Schema.Types.Mixed
 }, {versionKey : false})
 

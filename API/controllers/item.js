@@ -1,7 +1,7 @@
 var item = require('../models/item');
 
-module.exports.findAll = (userId) => {
-    return item.find({owner : userId}).exec()
+module.exports.findAll = (username) => {
+    return item.find({owner : username}).exec()
 }
 
 module.exports.findById = (id, userId) => {
@@ -13,6 +13,8 @@ module.exports.create = async (itemData) => {
     return newitem.save();
 }
 
-module.exports.delete = (id, userId) => {
-    return item.findOneAndDelete({_id : id, owner : userId}).exec();
+module.exports.delete = (id, username) => {
+    console.log('id: ' + id + '  |   username: ' + username)
+    //item.find({ _id: id, owner: username}).then(doc => console.log(doc))
+    return item.findOneAndDelete({_id : id, owner : username}).exec();
 }
