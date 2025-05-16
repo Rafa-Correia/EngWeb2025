@@ -4,6 +4,10 @@ module.exports.findAll = (userId) => {
     return item.find({owner : userId}).exec()
 }
 
+module.exports.findById = (id, userId) => {
+  return item.findOne({ _id: id, owner: userId }).exec();
+};
+
 module.exports.create = async (itemData) => {
     const newitem = new item(itemData);
     return newitem.save();
