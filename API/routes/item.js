@@ -15,7 +15,7 @@ var upload = multer({ dest: 'uploads/' })
 // GET items
 router.get('/', Auth.validate, function(req, res, next) {
     console.log('GET /items');
-    itemModel.findAll(req.user.username)
+    itemController.findAll(req.user.username)
         .then(data => res.status(200).jsonp(data))
         .catch(err => res.status(500).jsonp(err));
 });
@@ -33,30 +33,6 @@ router.get('/:id', Auth.validate, function(req, res, next) {
             }
         })
         .catch(err => res.status(500).jsonp(err));
-});
-
-
-// POST item
-router.post('/', Auth.validate, upload.single('file'), async function(req, res, next) {
-  const itemData = {
-    title: req.body.title,
-    description: req.body.description,
-    type: req.body.type,
-    file: req.file ? req.file.path.replace(/\\/g, '/') : null,
-    owner: req.user.username,
-    creationDate: new Date(),
-    metadata: req.body.metadata ? JSON.parse(req.body.metadata) : {}
-  };
-
-  console.log('POST /items', itemData);
-
-  try {
-    const result = await itemModel.create(itemData);
-    res.status(201).jsonp(result);
-  } catch (error) {
-    console.error('Error processing item:', error);
-    res.status(500).jsonp({ error: 'Erro ao criar item' });
-  }
 });
 
 
