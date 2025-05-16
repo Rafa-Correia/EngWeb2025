@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 var itemSchema = new mongoose.Schema({
-    name: String,
+    title: { type: String, required: true },
     description: String,
-    type : String,
+    type: { type: String, required: true },
     file : String,
-    creationDate : new Date(),
+    creationDate: { type: Date, default: Date.now },
     owner :  {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
