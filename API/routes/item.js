@@ -92,6 +92,42 @@ router.post('/uploadZip', validate, upload.single('file'), async (req, res) => {
 });
 
 
+// GET item as ZIP (DIP) PS: I think this works, it might or it might not
+router.get('/:id/download', Auth.validate, async (req, res) => {
+  try {
+    // Verificar se o item existe e é do tipo ZIP (Pode ser preferivel fazer outra verificação que nao zip)
+    const item = await itemController.findById(req.params.id, req.user._id);
+    if (!item || item.type !== 'zip') {
+      return res.status(404).json({ error: 'Item não encontrado ou inválido.' });
+    }
+
+    // Criar o zip e adicionar o manifesto
+    const zip = new jszip();
+    zip.file('manifesto-SIP.json', JSON.stringify(item.metadata, null, 2));
+
+    // Adicionar os ficheiros do item
+    const basePath = path.join(__dirname, '..', item.file);
+    const files = await fs.readdir(basePath);
+    for (const f of files) {
+      const content = await fs.readFile(path.join(basePath, f));
+      zip.file(f, content);
+    }
+
+    // Enviar o zip
+    const buffer = await zip.generateAsync({ type: 'nodebuffer' });
+
+    res.set({
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="DIP-${item._id}.zip"`
+    });
+    res.send(buffer);
+  } catch (err) {
+    console.error('Erro ao gerar ZIP do item:', err);
+    res.status(500).json({ error: 'Erro ao gerar ZIP do item.' });
+  }
+});
+
+
 // DELETE item
 router.delete('/:id', Auth.validate, function(req, res, next) {
     console.log('DELETE /items/' + req.params.id);

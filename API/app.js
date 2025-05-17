@@ -53,6 +53,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/items', itemRouter);
 app.use('/', userRouter);
 
+app.use('/fileStore', express.static(path.join(__dirname, 'public/fileStore'))); // Serve para ver os ficheiros directamente no browser 
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
