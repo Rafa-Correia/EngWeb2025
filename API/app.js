@@ -25,6 +25,7 @@ passport.deserializeUser(user.deserializeUser())
 
 var userRouter = require('./routes/user');
 var itemRouter = require('./routes/item')
+var adminRouter = require('./routes/admin');
 
 var mongoose = require('mongoose');
 const item = require('./models/item');
@@ -52,6 +53,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/items', itemRouter);
 app.use('/', userRouter);
+app.use('/admin', adminRouter);
+
 
 app.use('/fileStore', express.static(path.join(__dirname, 'public/fileStore'))); // Serve para ver os ficheiros directamente no browser 
 

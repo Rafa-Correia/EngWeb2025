@@ -7,6 +7,12 @@ var itemSchema = new mongoose.Schema({
     file : String,
     creationDate: { type: Date, default: Date.now },
     owner : String,
+    classificadores : [String],
+    isPublic : { type: Boolean, default: false },
+    comments: [{
+        text: { type: String, required: true },
+        date: { type: Date, default: Date.now }
+    }],
     metadata : mongoose.Schema.Types.Mixed
 }, {versionKey : false})
 
