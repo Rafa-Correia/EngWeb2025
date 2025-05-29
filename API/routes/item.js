@@ -70,7 +70,7 @@ router.get('/:id', Auth.validate, function(req, res, next) {
 
 
 // POST item with file upload
-router.post('/uploadZip', validate, upload.single('file'), async (req, res) => {
+router.post('/uploadZip', Auth.validate, upload.single('file'), async (req, res) => {
   try {
     const zipPath = req.file.path;
     const zipBuffer = fs.readFileSync(zipPath);

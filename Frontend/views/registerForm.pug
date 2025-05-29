@@ -1,0 +1,11 @@
+extends Layout 
+
+block content 
+    form.flex-vertical(method="POST", href="/users/register")
+        label(for="uname") Username
+        input(type="text", placeholder="Username", required, id="uname", name="uname")
+        label(for="fname") Full Name
+        input(type="text", placeholder="Jane Doe", required, id="fname", name="fname") 
+        label(for="passsword") Password
+        input(type="password", required, id="password", name="password")
+        button(type="submit") Submit form

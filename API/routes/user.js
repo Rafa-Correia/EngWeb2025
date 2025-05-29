@@ -15,7 +15,7 @@ router.post('/register', function(req, res, next) {
         function(err, user) {
             console.log(user);
             if (err) res.jsonp(err);
-            else res.send('Yuppie! You are registered');
+            else res.status(201).send('Yuppie! You are registered');
         }
     )
 });
