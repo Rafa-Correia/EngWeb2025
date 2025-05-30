@@ -14,8 +14,8 @@ router.post('/register', function(req, res, next) {
         req.body.password,
         function(err, user) {
             console.log(user);
-            if (err) res.jsonp(err);
-            else res.status(201).send('Yuppie! You are registered');
+            if (err) res.status(400).jsonp(err);
+            else res.status(200).send('Yuppie! You are registered');
         }
     )
 });
@@ -30,8 +30,8 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
         'EngWeb2025',
         { expiresIn: '1d' },
         (err, token) => {
-            if (err) res.jsonp(err)
-            else res.status(201).jsonp({ token : token })
+            if (err) res.status(400).jsonp(err)
+            else res.status(200).jsonp({ token : token })
         }
     )
 })
