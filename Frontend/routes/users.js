@@ -27,7 +27,6 @@ router.post('/register', (req, res, next) => {
       }
       else {
         console.log('Success!')
-        res.send('<script>alert("Successful registry!"); </script>');
         res.redirect('http://localhost:17001/')
       }
     })
@@ -58,11 +57,13 @@ router.post('/login', (req, res, next) => {
       }
       else {
         console.log("Success!")
-        res.status(200).jsonp(response.data)
+        res.status(200)
+        res.cookie('jwt', response.data.token, {maxAge:86400000, httpOnly: true})
+        res.jsonp({status: "Success!"}) //86'400'000 ms is 1 day!
       }
     })
     .catch(err => {
-      res.prependListener('error', {error : err})
+      res.render('error', {error : err})
       console.log('Something went wrong when loging user in...')
     })
 })

@@ -1,0 +1,11 @@
+extends layout 
+
+block content 
+    form(method="POST") 
+        label(for="title") Post Title
+        input(type="text", id="title", name="title", required, placeholder="this is a title")
+
+        label(for="desc") Description
+        input(type="text", id="desc", name="desc", placeholder="Description")
+
+        button(type="submit") Post

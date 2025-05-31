@@ -1,0 +1,13 @@
+extends layout 
+
+block content 
+    div 
+        header 
+            h1 
+                span Diary entry 
+    
+    ul 
+        each item in diaryEntries
+            il= item
+
+    a(href="/diary/create") Create a post
