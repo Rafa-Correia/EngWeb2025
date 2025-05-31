@@ -21,8 +21,10 @@ router.post('/register', function(req, res, next) {
 });
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
+    //console.log(req.user._id);
     jwt.sign(
         {
+            //_id: req.user._id,
             username: req.user.username,
             name: req.user.name,
             creationDate: new Date()

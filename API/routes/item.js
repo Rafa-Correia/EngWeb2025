@@ -8,7 +8,7 @@ var fs = require('fs')
 var jszip = require('jszip')
 var xml2js = require('xml2js')
 var Auth = require('../auth/auth');
-var logs = require('../utils/logger')
+var logger = require('../utils/logger')
 
 var upload = multer({ dest: 'uploads/' })
 
@@ -56,7 +56,7 @@ router.get('/', Auth.validate, function(req, res, next) {
 // GET item by id
 router.get('/:id', Auth.validate, function(req, res, next) {
     console.log('GET /items/' + req.params.id);
-    itemController.findById(req.params.id, req.user._id)
+    itemController.findById(req.params.id, req.user.username)
         .then(data => {
             if(data) {
                 res.status(200).jsonp(data);
@@ -102,7 +102,10 @@ router.post('/uploadZip', Auth.validate, upload.single('file'), async (req, res)
 
     // Criar pasta destino: public/fileStore/<user_id>/<item_id>/
     const itemUUID = uuidv4();
-    const destFolder = path.join('public', 'fileStore', req.user._id.toString(), itemUUID);
+    console.log(itemUUID);
+    console.log(req.user);
+    const destFolder = path.join('public', 'fileStore', req.user.username, itemUUID);
+    console
     fs.mkdirSync(destFolder, { recursive: true });
 
     // Extrair os ficheiros (exceto o manifesto)
@@ -126,8 +129,6 @@ router.post('/uploadZip', Auth.validate, upload.single('file'), async (req, res)
       creationDate: new Date()
     };
 
-
-
     const result = await itemController.create(itemData);
     res.status(201).jsonp(result);
   } catch (err) {
@@ -137,41 +138,46 @@ router.post('/uploadZip', Auth.validate, upload.single('file'), async (req, res)
 });
 
 
-// GET item as ZIP (DIP) PS: I think this works, it might or it might not
-router.get('/:id/download', Auth.validate, async (req, res) => {
-  try {
-    // Verificar se o item existe e é do tipo ZIP (Pode ser preferivel fazer outra verificação que nao zip)
-    const item = await itemController.findById(req.params.id, req.user._id);
-    if (!item || item.type !== 'zip') {
-      return res.status(404).json({ error: 'Item não encontrado ou inválido.' });
-    }
+// GET item as ZIP (DIP) PS: I think this works, it might or it might not ERRO!!!!!!!!!!!!!!!!!!!!!!!!!!
+router.get('/:id/download', Auth.validate, function(req, res, next) {
+  //console.log('GET /items/' + req.params.id + '/download');
 
-    logger.logAction(req.user.username, 'download', req.params.id); // needs testing
+  itemController.findById(req.params.id, req.user.username)
+    .then(async (item) => {
+      if (!item || item.type !== 'zip') {
+        return res.status(404).jsonp({ error: 'Item não encontrado ou inválido.' });
+      }
 
-    // Criar o zip e adicionar o manifesto
-    const zip = new jszip();
-    zip.file('manifesto-SIP.json', JSON.stringify(item.metadata, null, 2));
+      logger.logAction(req.user.username, 'download', req.params.id);
 
-    // Adicionar os ficheiros do item
-    const basePath = path.join(__dirname, '..', item.file);
-    const files = await fs.readdir(basePath);
-    for (const f of files) {
-      const content = await fs.readFile(path.join(basePath, f));
-      zip.file(f, content);
-    }
+      const zip = new jszip();
+      zip.file('manifesto-SIP.json', JSON.stringify(item.metadata, null, 2));
 
-    // Enviar o zip
-    const buffer = await zip.generateAsync({ type: 'nodebuffer' });
+      const basePath = path.join(__dirname, '..', item.file);
 
-    res.set({
-      'Content-Type': 'application/zip',
-      'Content-Disposition': `attachment; filename="DIP-${item._id}.zip"`
+      try {
+        const files = await fs.promises.readdir(basePath);
+        for (const f of files) {
+          const content = await fs.promises.readFile(path.join(basePath, f));
+          zip.file(f, content);
+        }
+      } catch (fsErr) {
+        console.error('Erro a ler os ficheiros do item:', fsErr);
+        return res.status(500).jsonp({ error: 'Erro a ler os ficheiros do item.' });
+      }
+
+      const buffer = await zip.generateAsync({ type: 'nodebuffer' });
+
+      res.set({
+        'Content-Type': 'application/zip',
+        'Content-Disposition': `attachment; filename="DIP-${item._id}.zip"`
+      });
+      res.send(buffer);
+    })
+    .catch(err => {
+      console.error('Erro ao gerar ZIP do item:', err);
+      res.status(500).jsonp({ error: 'Erro ao gerar ZIP do item.' });
     });
-    res.send(buffer);
-  } catch (err) {
-    console.error('Erro ao gerar ZIP do item:', err);
-    res.status(500).json({ error: 'Erro ao gerar ZIP do item.' });
-  }
 });
 
 
@@ -234,21 +240,23 @@ router.post('/:id/comments', Auth.validate, async (req, res) => {
 
 
 // GET /:id/comments
-router.get('/:id/comments', Auth.validate, async (req, res) => {
-  try {
-    const item = await itemController.findById(req.params.id, req.user._id);
-    if (!item) {
-      return res.status(404).json({ error: 'Item não encontrado.' });
-    }
+router.get('/:id/comments', Auth.validate, function(req, res, next) {
+  console.log('GET /items/' + req.params.id + '/comments');
 
-    res.status(200).json(item.comments);
-  } catch (err) {
-    console.error('Erro ao obter comentários:', err);
-    res.status(500).json({ error: 'Erro ao obter comentários.' });
-  }
+  itemController.findById(req.params.id, req.user.username)
+    .then(item => {
+      if (item) {
+        res.status(200).jsonp(item.comments);
+      } else {
+        res.status(404).jsonp({ error: 'Item not found' });
+      }
+      logger.logAction(req.user.username, 'view_comments', req.params.id); // testing
+    })
+    .catch(err => {
+      console.error('Erro ao obter comentários:', err);
+      res.status(500).jsonp({ error: 'Erro ao obter comentários.' });
+    });
 });
-
-
 
 
 module.exports = router;
