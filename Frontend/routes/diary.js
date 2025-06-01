@@ -19,6 +19,23 @@ router.get('/', (req, res, next) => {
     })
 })
 
+router.get('/:id', (req, res, next) => {
+  const itemId = req.params.id
+
+  axios.get(`http://localhost:17000/items/${itemId}`, {
+    headers: {
+      Authorization: `Bearer ${req.cookies.jwt}`
+    }
+  })
+  .then(response => {
+    res.render('item', { item: response.data, date: new Date().toISOString().slice(0, 10) })
+  })
+  .catch(err => {
+    res.render('error', { error: err })
+  })
+})
+
+
 router.get('/create', (req, res, next) => {
     res.render('diaryEntryForm', {date: new Date().toISOString().slice(0, 10)})
 })

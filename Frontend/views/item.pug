@@ -1,0 +1,45 @@
+extends layout
+
+block content
+  .w3-container.w3-padding
+    .w3-card-4.w3-white.w3-round-large.w3-padding
+      h2= item.title
+
+      p
+        strong Descrição:
+        |  #{item.description}
+
+      p
+        strong Data de Criação:
+        |  #{item.creationDate}
+
+      p
+        strong Visibilidade:
+        span(class= item.isPublic ? "w3-text-green" : "w3-text-red") 
+          = item.isPublic ? 'Público' : 'Privado'
+
+      if item.classificadores.length
+        p
+          strong Classificadores:
+          ul
+            each tag in item.classificadores
+              li= tag
+
+      if item.files.length
+        p
+          strong Ficheiros:
+          ul
+            each f in item.files
+              li
+                a(href=`/files/${f._id}`, target="_blank")= f.originalname || 'Ficheiro'
+
+      if item.comments.length
+        p
+          strong Comentários:
+          ul
+            each c in item.comments
+              li
+                | #{c.text} 
+                small.w3-text-grey (#{new Date(c.date).toLocaleDateString('pt-PT')})
+
+    a(href="/diary", class="w3-button w3-blue w3-margin-top w3-round") Voltar
