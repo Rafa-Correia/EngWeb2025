@@ -34,13 +34,6 @@ module.exports.create = async (itemData) => {
 module.exports.delete = (id, username) => {
     console.log('id: ' + id + '  |   username: ' + username)
     //item.find({ _id: id, owner: username}).then(doc => console.log(doc))
-    item.find({_id: id, owner: username})
-      .then(post => {
-        documents = post.files
-        for(const doc of documents) {
-          document.findOneAndDelete({_id: doc._id})
-        }
-      })
     return item.findOneAndDelete({_id : id, owner : username}).exec();
 }
 

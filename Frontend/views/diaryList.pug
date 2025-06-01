@@ -22,6 +22,7 @@ block content
           th Descrição
           th Visibilidade
           th Data de Criação
+          th Delete
       tbody
         each item in diaryEntries
           tr
@@ -30,6 +31,9 @@ block content
             td.truncate= item.description
             td= item.visibility ? 'Público' : 'Privado'
             td.truncate= item.creationDate
+            td
+                form(method="POST", action=`/diary/${item._id}/delete`, onsubmit="return confirm('Tens a certeza que queres eliminar este item?');")
+                    button(type="submit", class="w3-button w3-red w3-small w3-round") Delete
 
     // Botão para criar nova entrada
     div.w3-margin-top

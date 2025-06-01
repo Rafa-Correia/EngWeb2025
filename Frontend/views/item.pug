@@ -1,11 +1,20 @@
 extends layout
 
+block head 
+  style.
+    .truncate {
+      max-width: 600px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
 block content
   .w3-container.w3-padding
     .w3-card-4.w3-white.w3-round-large.w3-padding
-      h2= item.title
+      h2.truncate= item.title
 
-      p
+      p.truncate
         strong Descrição:
         |  #{item.description}
 
@@ -27,11 +36,9 @@ block content
 
       if item.files.length
         p
-          strong Ficheiros:
-          ul
-            each f in item.files
-              li
-                a(href=`/files/${f._id}`, target="_blank")= f.originalname || 'Ficheiro'
+            strong Num. de ficheiros:
+            |  #{item.files.length}
+
 
       if item.comments.length
         p
@@ -40,6 +47,10 @@ block content
             each c in item.comments
               li
                 | #{c.text} 
-                small.w3-text-grey (#{new Date(c.date).toLocaleDateString('pt-PT')})
+                small.w3-text-grey (#{new Date(c.date).toISOString().slice(0, 19).replace('T', ', ')})
 
-    a(href="/diary", class="w3-button w3-blue w3-margin-top w3-round") Voltar
+    div(class="w3-bar w3-margin-top")
+        a(href="/diary", class="w3-button w3-blue w3-round w3-bar-item") Voltar
+        a(href=`/diary/${item._id}/comment`, class="w3-button w3-light-blue w3-text-white w3-round w3-bar-item w3-margin-left") Comentar
+        a(href=`/diary/${item._id}/download`, class="w3-button w3-green w3-round w3-bar-item w3-margin-left") Download
+

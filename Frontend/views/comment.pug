@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  .w3-container.w3-padding
+    h2 Comentar Post
+
+    form(method="POST", action=`/diary/${itemId}/comment`, class="w3-card w3-white w3-round-large w3-padding")
+
+      label(for="text" class="w3-text-grey") Comentário
+      textarea(class="w3-input w3-border w3-margin-bottom" name="text" required rows="4" placeholder="Escreve o teu comentário...")
+
+      button(type="submit", class="w3-button w3-green w3-round") Enviar
+
+      a(href=`/diary/${itemId}`, class="w3-button w3-grey w3-margin-left w3-round") Cancelar
