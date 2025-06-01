@@ -1,11 +1,18 @@
-extends Layout 
+extends layout
 
-block content 
-    form.flex-vertical(method="POST", href="/users/register")
-        label(for="uname") Username
-        input(type="text", placeholder="Username", required, id="uname", name="uname")
-        label(for="fname") Full Name
-        input(type="text", placeholder="Jane Doe", required, id="fname", name="fname") 
-        label(for="passsword") Password
-        input(type="password", required, id="password", name="password")
-        button(type="submit") Submit form
+block content
+  div(class="w3-container w3-padding-32")
+    h2(class="w3-center") Registo de Utilizador
+
+    form(class="w3-container w3-card w3-white w3-round-large w3-padding" method="POST" action="/users/register")
+      
+      label(for="uname" class="w3-text-grey") Username
+      input(class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Username" required id="uname" name="uname")
+
+      label(for="fname" class="w3-text-grey") Nome Completo
+      input(class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Jane Doe" required id="fname" name="fname")
+
+      label(for="password" class="w3-text-grey") Palavra-passe
+      input(class="w3-input w3-border w3-margin-bottom" type="password" required id="password" name="password")
+
+      button(class="w3-button w3-blue w3-round-large w3-hover-indigo" type="submit") Submeter

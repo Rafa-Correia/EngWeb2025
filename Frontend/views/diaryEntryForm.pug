@@ -1,20 +1,38 @@
 extends layout 
 
 block head 
-    script(type="text/javascript", src="/javascripts/jquery-3.7.1.min.js")
-    script(type="text/javascript", src="/javascripts/diaryEntryForm.js")
+  script(src="/javascripts/jquery-3.7.1.min.js")
+  script(src="/javascripts/diaryEntryForm.js")
 
 block content 
-    form(method="POST", enctype="multipart/form-data") 
-        label(for="title") Post Title
-        input(type="text", id="title", name="title", required, placeholder="this is a title")
+  .w3-container.w3-padding
+    h2.w3-center Nova Entrada no Diário
 
-        label(for="desc") Description
-        input(type="text", id="desc", name="desc", placeholder="Description")
+    form(method="POST" class="w3-card w3-white w3-round-large w3-padding w3-margin-top", enctype="multipart/form-data")
 
-        input(type="text", name="tipo", placeholder="tipo")
-        input(type="text", name="isPublic", placeholder="false")
+        label(for="title" class="w3-text-grey") Título do Post
+        input.w3-input.w3-border.w3-margin-bottom(type="text" id="title" name="title" required placeholder="Este é um título")  
 
-        input(type="file", name="uploads")
+        label.w3-text-grey(for="desc") Descrição
+        input.w3-input.w3-border.w3-margin-bottom(type="text" id="desc" name="desc" placeholder="Descrição")    
 
-        button(type="submit") Post
+        label.w3-text-grey(for="tipo") Tipo de Post
+        select.w3-select(id="tipo" name="tipo" required)
+            option(value="texto" selected) Texto
+            option(value="foto") Fotos
+            option(value="viagem") Viagem
+            option(value="trabalho") Trabalho
+            option(value="formacao") Formacao
+            option(value="evento") Evento
+            option(value="desporto") Desporto 
+            option(value="saude") Saude   
+
+        label.w3-text-grey(for="isPublic") Visibilidade
+        select.w3-select(id="isPublic" name="isPublic" required)
+            option(value="true") Publico 
+            option(value="false" selected) Privado
+
+        label.w3-text-grey(for="file") Ficheiro (teste for now, this is not yet dynamic or anything)
+        input.w3-input.w3-border.w3-margin-bottom(type="file" id="file" name="uploads")  
+
+        button(type="submit" class="w3-button w3-blue w3-round-large") Publicar

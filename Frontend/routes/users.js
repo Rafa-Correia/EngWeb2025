@@ -4,7 +4,7 @@ var axios = require('axios');
 
 /* GET users listing. */
 router.get('/register', (req, res, next) => {
-  res.render('registerForm')
+  res.render('registerForm', {date: new Date().toISOString().slice(0, 10)})
 })
 
 router.post('/register', (req, res, next) => {
@@ -37,7 +37,7 @@ router.post('/register', (req, res, next) => {
 })
 
 router.get('/login', (req, res, next) => {
-  res.render('loginForm')
+  res.render('loginForm', {date: new Date().toISOString().slice(0, 10)})
 })
 
 router.post('/login', (req, res, next) => {

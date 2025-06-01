@@ -15,7 +15,7 @@ router.get('/', (req, res, next) => {
         }
     })
     .then(response => {
-        res.render('diaryList', {diaryEntries: response.data})
+        res.render('diaryList', {diaryEntries: response.data, date: new Date().toISOString().slice(0, 10)})
     })
     .catch(err => {
         res.render('error', {error: err})
@@ -23,7 +23,7 @@ router.get('/', (req, res, next) => {
 })
 
 router.get('/create', (req, res, next) => {
-    res.render('diaryEntryForm')
+    res.render('diaryEntryForm', {date: new Date().toISOString().slice(0, 10)})
 })
 
 router.post('/create', upload.array('uploads'), async (req, res, next) => {
@@ -87,11 +87,11 @@ router.post('/create', upload.array('uploads'), async (req, res, next) => {
         }
     })
     .then(ans => {
-        res.status(200).json(ans)
+        res.redirect('/diary')
     })
     .catch(err => {
         console.log(`Error: ${err}`)
-        res.status(500).json(err)
+        res.render('error', {error: err})
     })
 })
 

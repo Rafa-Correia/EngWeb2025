@@ -24,6 +24,10 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/diary', diaryRouter);
 
+app.use((req, res, next) => {
+  res.locals.date = new Date().toISOString().slice(0, 10)
+  next()
+})
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
