@@ -1,21 +1,24 @@
 extends layout 
 
 block content 
-    .w3-card-4
-        header.w3-container.w3-teal
-            h1 
-                span Lista de Entradas
+  .w3-card-4.w3-margin-bottom
+    header.w3-container.w3-teal
+      h1 Lista de Entradas
 
-    .w3-container
-        table.w3-table-all
-            tr 
-                th Title    
-                th Descricao
-                th Data de criacao
-            each item in diaryEntries
-                tr
-                    td= item.title
-                    td= item.description
-                    td= item.creationDate
+  .w3-container
+    table.w3-table-all.w3-hoverable.w3-margin-top
+      thead
+        tr(class="w3-light-grey")
+          th Título    
+          th Descrição
+          th Data de Criação
+      tbody
+        each item in diaryEntries
+          tr
+            td= item.title
+            td= item.description
+            td= item.creationDate
 
-    a(href="/diary/create") Create a post
+    // Botão para criar nova entrada
+    div(class="w3-margin-top")
+      a(href="/diary/create", class="w3-button w3-blue w3-round") Nova Entrada

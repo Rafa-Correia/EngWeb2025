@@ -34,7 +34,7 @@ function logout() {
   })
   .then(ans => {
     if(ans.ok) {
-        window.location.reload()
+        window.location.href = '/'; // Redirect to login page after logout
     } 
     else {
         alert("Couldn't logout.")

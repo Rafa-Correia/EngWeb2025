@@ -1,15 +1,19 @@
 extends layout 
 
 block head 
-    script(type="text/javascript", src="/javascripts/jquery-3.7.1.min.js")
-    script(type="text/javascript", src="/javascripts/diaryEntryForm.js")
+  script(src="/javascripts/jquery-3.7.1.min.js")
+  script(src="/javascripts/diaryEntryForm.js")
 
 block content 
-    form(method="POST") 
-        label(for="title") Post Title
-        input(type="text", id="title", name="title", required, placeholder="this is a title")
+  .w3-container.w3-padding
+    h2.w3-center Nova Entrada no Diário
 
-        label(for="desc") Description
-        input(type="text", id="desc", name="desc", placeholder="Description")
+    form(method="POST" class="w3-card w3-white w3-round-large w3-padding w3-margin-top")
 
-        button(type="submit") Post
+      label(for="title" class="w3-text-grey") Título do Post
+      input(class="w3-input w3-border w3-margin-bottom" type="text" id="title" name="title" required placeholder="Este é um título")
+
+      label(for="desc" class="w3-text-grey") Descrição
+      input(class="w3-input w3-border w3-margin-bottom" type="text" id="desc" name="desc" placeholder="Descrição")
+
+      button(type="submit" class="w3-button w3-blue w3-round-large") Publicar
