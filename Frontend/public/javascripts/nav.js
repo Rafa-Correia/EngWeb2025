@@ -13,13 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (userLoggedIn) {
     navButtons.innerHTML = `
-      <button onclick="logout()" class="w3-button w3-red w3-margin-right">Logout</button>
+      <button onclick="logout()" class="w3-button w3-red w3-margin-right w3-round-large">Logout</button>
     `;
     diaryButton.disabled = false
   } else {
     navButtons.innerHTML = `
-      <button onclick="window.location.href='/users/register'" class="w3-button w3-blue w3-margin-right">Register</button>
-      <button onclick="window.location.href='/users/login'" class="w3-button w3-green">Login</button>
+      <button onclick="window.location.href='/users/register'" class="w3-button w3-blue w3-margin-right w3-round-large">Register</button>
+      <button onclick="window.location.href='/users/login'" class="w3-button w3-green w3-round-large">Login</button>
     `;
     diaryButton.disabled = true
   }
