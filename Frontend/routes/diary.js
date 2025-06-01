@@ -4,6 +4,9 @@ var axios = require('axios')
 var multer = require('multer')
 var upload = multer({dest: 'tmp'})
 var fs = require('fs')
+var jszip = require('jszip')
+var crypto = require('crypto');
+const { writeHeapSnapshot } = require('v8');
 
 router.get('/', (req, res, next) => {
     axios.get('http://localhost:17000/items', {
@@ -23,14 +26,73 @@ router.get('/create', (req, res, next) => {
     res.render('diaryEntryForm')
 })
 
-router.post('/create', (req, res, next) => {
-    let post = {
-        title: req.body.title,
-        description: req.body.desc
+router.post('/create', upload.array('uploads'), async (req, res, next) => {
+    let f_list = req.files
+    let n_files = 0
+    if(f_list) {
+        n_files = f_list.length
     }
 
-    console.log(JSON.stringify(post))
-    res.redirect('http://localhost:17001')
+    let post = {
+        title: req.body.title,
+        description: req.body.desc,
+        tipo: req.body.tipo,
+        isPublic: req.body.isPublic,
+        fileCount: n_files
+    }
+
+
+    let zip = new jszip()
+    let hashes = []
+
+    zip.file('manifesto-SIP.json', JSON.stringify(post))
+
+    for(const file of f_list) {
+        let metadata = {
+            originalName: file.originalname,
+            mimetype: file.mimetype,
+            size: file.size
+        }
+        const data = fs.readFileSync(file.path)
+        const hash = crypto.createHash('sha256')
+        hash.update(data)
+        let hash_str = hash.digest('hex')
+        const obj = {
+            path: `data/${metadata.originalName}`,
+            hash: hash_str
+        }
+        hashes.push(obj)
+
+        zip.file(`data/${metadata.originalName}`, data)
+        zip.file(`data/meta/${metadata.originalName}.json`, JSON.stringify(metadata))
+    }
+
+
+    const lines = hashes.map(entry => `${entry.hash} ${entry.path}`)
+    const content = lines.join('\n') + '\n' //this last one is for convention?? i thinK?
+
+    zip.file('manifest-sha256.txt', content)
+    zip.file('bagit.txt', 'This is a BagIt bag!')
+
+    const bag = await zip.generateAsync({type : 'blob'})
+
+    const file = new File([bag], 'bag.zip', {type : 'application/zip'})
+
+    const formData = new FormData()
+    formData.append('file', file)
+    //post the bag to the backend server
+    axios.post('http://localhost:17000/items/uploadZIP', formData, {
+        headers: {
+            Authorization: `Bearer ${req.cookies.jwt}`,
+        }
+    })
+    .then(ans => {
+        res.status(200).json(ans)
+    })
+    .catch(err => {
+        console.log(`Error: ${err}`)
+        res.status(500).json(err)
+    })
 })
 
 module.exports = router;

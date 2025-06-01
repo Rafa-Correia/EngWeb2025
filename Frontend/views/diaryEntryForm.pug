@@ -5,11 +5,16 @@ block head
     script(type="text/javascript", src="/javascripts/diaryEntryForm.js")
 
 block content 
-    form(method="POST") 
+    form(method="POST", enctype="multipart/form-data") 
         label(for="title") Post Title
         input(type="text", id="title", name="title", required, placeholder="this is a title")
 
         label(for="desc") Description
         input(type="text", id="desc", name="desc", placeholder="Description")
+
+        input(type="text", name="tipo", placeholder="tipo")
+        input(type="text", name="isPublic", placeholder="false")
+
+        input(type="file", name="uploads")
 
         button(type="submit") Post
