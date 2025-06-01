@@ -264,4 +264,34 @@ router.post('/:id/comment', (req, res) => {
   .catch(err => res.render('error', { error: err }));
 });
 
+router.post('/:id/toggle-visibility', async (req, res) => {
+  const itemId = req.params.id;
+
+  try {
+    // Buscar o item atual
+    const itemResp = await axios.get(`http://localhost:17000/items/${itemId}`, {
+      headers: {
+        Authorization: `Bearer ${req.cookies.jwt}`
+      }
+    });
+
+    const currentVisibility = itemResp.data.isPublic;
+
+    // Enviar PATCH com o valor invertido
+    await axios.patch(`http://localhost:17000/items/${itemId}/visibility`, {
+      isPublic: !currentVisibility
+    }, {
+      headers: {
+        Authorization: `Bearer ${req.cookies.jwt}` 
+      }
+    });
+
+    console.log(`Visibilidade do item ${itemId} alterada para ${!currentVisibility}`);
+    res.redirect(`/diary/${itemId}`);
+  } catch (err) {
+    console.error('Erro a alternar visibilidade:', err);
+    res.render('error', { error: err });
+  }
+});
+
 module.exports = router;

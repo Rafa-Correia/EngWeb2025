@@ -24,8 +24,11 @@ block content
 
       p
         strong Visibilidade:
-        span(class= item.isPublic ? "w3-text-green" : "w3-text-red") 
-          = item.isPublic ? 'Público' : 'Privado'
+        span(class= item.isPublic ? 'w3-text-green' : 'w3-text-red') #{item.isPublic ? 'Público' : 'Privado'}
+        |  
+        form(method="POST", action=`/diary/${item._id}/toggle-visibility`, style="display:inline; margin-left:10px")
+            button(type="submit", class="w3-button w3-small w3-round w3-light-grey") 
+                = item.isPublic ? 'Privatizar' : 'Publicar'
 
       if item.classificadores.length
         p
