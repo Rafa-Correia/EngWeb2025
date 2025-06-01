@@ -1,0 +1,30 @@
+extends layout 
+
+block head 
+  style.
+    .truncate {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+block content 
+  .w3-card-4.w3-margin-bottom
+    header.w3-container.w3-teal
+      h1 Lista de Posts Publicos
+
+  .w3-container
+    table.w3-table-all.w3-hoverable.w3-margin-top
+      thead
+        tr.w3-light-grey
+          th Título    
+          th Descrição
+          th Data de Criação
+      tbody
+        each item in publicEntries
+          tr
+            td.truncate
+              a(href=`/diary/public/${item._id}`, class="w3-text-blue w3-hover-text-indigo")= item.title
+            td.truncate= item.description
+            td.truncate= item.creationDate

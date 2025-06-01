@@ -15,13 +15,15 @@ document.addEventListener("DOMContentLoaded", () => {
     navButtons.innerHTML = `
       <button onclick="logout()" class="w3-button w3-red w3-margin-right w3-round-large">Logout</button>
     `;
-    diaryButton.disabled = false
+    if(diaryButton)
+      diaryButton.disabled = false
   } else {
     navButtons.innerHTML = `
       <button onclick="window.location.href='/users/register'" class="w3-button w3-blue w3-margin-right w3-round-large">Register</button>
       <button onclick="window.location.href='/users/login'" class="w3-button w3-green w3-round-large">Login</button>
     `;
-    diaryButton.disabled = true
+    if(diaryButton)
+      diaryButton.disabled = true
   }
 
 });

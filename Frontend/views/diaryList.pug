@@ -29,7 +29,7 @@ block content
             td.truncate
               a(href=`/diary/${item._id}`, class="w3-text-blue w3-hover-text-indigo")= item.title
             td.truncate= item.description
-            td= item.visibility ? 'Público' : 'Privado'
+            td= item.isPublic ? 'Público' : 'Privado'
             td.truncate= item.creationDate
             td
                 form(method="POST", action=`/diary/${item._id}/delete`, onsubmit="return confirm('Tens a certeza que queres eliminar este item?');")

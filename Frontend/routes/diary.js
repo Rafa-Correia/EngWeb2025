@@ -37,10 +37,11 @@ router.post('/create', upload.array('uploads'), async (req, res, next) => {
         title: req.body.title,
         description: req.body.desc,
         tipo: req.body.tipo,
-        isPublic: req.body.isPublic,
+        isPublic: req.body.isPublic === 't',
         fileCount: n_files
     }
 
+    console.log(JSON.stringify(post))
 
     let zip = new jszip()
     let hashes = []
@@ -94,6 +95,94 @@ router.post('/create', upload.array('uploads'), async (req, res, next) => {
         res.render('error', {error: err})
     })
 })
+
+router.get('/public', (req, res, next) => {
+  axios.get('http://localhost:17000/items/public/items', {
+        headers: {
+            Authorization: `Bearer ${req.cookies.jwt}`
+        }
+    })
+    .then(response => {
+        res.render('publicList', {publicEntries: response.data, date: new Date().toISOString().slice(0, 10)})
+    })
+    .catch(err => {
+        res.render('error', {error: err})
+    })
+})
+
+
+router.get('/public/:id', (req, res, next) => {
+  const itemId = req.params.id
+
+  axios.get(`http://localhost:17000/items/public/items/${itemId}`, {
+    headers: {
+      Authorization: `Bearer ${req.cookies.jwt}`
+    }
+  })
+  .then(response => {
+    res.render('publicItem', { item: response.data, date: new Date().toISOString().slice(0, 10) })
+  })
+  .catch(err => {
+    res.render('error', { error: err })
+  })
+})
+
+
+router.get('/public/:id/download', (req, res) => {
+  const itemId = req.params.id;
+
+  axios.get(`http://localhost:17000/items/public/${itemId}/download`, {
+    headers: {
+      Authorization: `Bearer ${req.cookies.jwt}`
+    },
+    responseType: 'stream'
+  })
+  .then(apiRes => {
+    // Encaminha headers do ficheiro ZIP
+    res.setHeader('Content-Disposition', apiRes.headers['content-disposition'] || `attachment; filename="post_${itemId}.zip"`);
+    res.setHeader('Content-Type', apiRes.headers['content-type'] || 'application/zip');
+
+    // Faz pipe da stream da API para a resposta HTTP
+    apiRes.data.pipe(res);
+  })
+  .catch(err => {
+    console.error('Erro ao fazer download:', err.message);
+    res.render('error', { error: err });
+  });
+});
+
+
+router.get('/public/:id/comment', (req, res, next) => {
+    const itemId = req.params.id;
+
+    axios.get(`http://localhost:17000/items/${itemId}/comments`, {
+        headers: {
+            Authorization: `Bearer ${req.cookies.jwt}`
+        }
+    })
+    .then(response => {
+        res.render('commentPublic', {date: new Date().toISOString().slice(0, 10), itemId: itemId})
+    })
+    .catch(err => {
+        res.render('error', {error: err})
+    })
+})
+
+router.post('/public/:id/comment', (req, res) => {
+  const itemId = req.params.id;
+
+  axios.post(`http://localhost:17000/items/${itemId}/comments`, {
+    text: req.body.text
+  }, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Bearer ${req.cookies.jwt}`
+    }
+  })
+  .then(() => res.redirect(`/diary/public/${itemId}`))
+  .catch(err => res.render('error', { error: err }));
+});
+
 
 router.get('/:id', (req, res, next) => {
   const itemId = req.params.id

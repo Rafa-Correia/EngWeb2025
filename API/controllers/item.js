@@ -57,8 +57,8 @@ module.exports.setVisibility = (id, username, isPublic) => {
 };
 
 
-module.exports.addComment = async (id, username, text) => {
-  const itemDoc = await item.findOne({ _id: id, owner: username }).exec();
+module.exports.addComment = async (id, text) => {
+  const itemDoc = await item.findOne({ _id: id}).exec();
   if (!itemDoc) return null;
 
   itemDoc.comments.push({ text: text });
@@ -92,17 +92,16 @@ module.exports.ingest = async (zipPath, username) => {
       return {error: 'Tipo inválido no manifesto. Deve ser um dos: ' + CLASSIFICADORES_VALIDOS.join(', ')}
     }
 
-    if(manifestoContent.fileCount === 0) {
+    if(postinfo.fileCount === 0) {
       // register post without items
       // if this is the case, there's no need for a bag, so no need to analise it at all
-
       await item.create({
         title: postinfo.title,
         description: postinfo.description,
         files: [],
         owner: username,
         classificadores: [tipo],
-        isPublic: postinfo.public === true,
+        isPublic: postinfo.isPublic,
         creationDate: new Date()
       })
 
@@ -219,7 +218,7 @@ module.exports.ingest = async (zipPath, username) => {
       description: postinfo.description,
       files: document_ids,
       owner: username,
-      isPublic: postinfo.public === true,
+      isPublic: postinfo.isPublic,
       creationDate: new Date()
     })
 
