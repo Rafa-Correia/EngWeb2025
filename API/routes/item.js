@@ -1,19 +1,20 @@
 var express = require('express');
 var router = express.Router();
 var path = require('path');
-var uuidv4 = require('uuid').v4;
 var itemController = require('../controllers/item');
 var multer = require('multer')
 var fs = require('fs')
 var jszip = require('jszip')
-var xml2js = require('xml2js')
 var Auth = require('../auth/auth');
 var logger = require('../utils/logger')
 
 var upload = multer({ dest: 'uploads/' })
 
-const CLASSIFICADORES_VALIDOS = [ 'foto', 'viagem', 'trabalho', 'formacao', 'evento', 'desporto', 'saude' ];
 
+// <================================= REMOVE THIS
+var documentModel = require('../models/document')
+var itemModel = require('../models/item')
+// =============================================>
 
 // GET /public/items
 router.get('/public/items', async function(req, res) {
@@ -70,79 +71,29 @@ router.get('/:id', Auth.validate, function(req, res, next) {
 
 
 // POST item with file upload
-router.post('/uploadZip', Auth.validate, upload.single('file'), async (req, res) => {
-  try {
-    const zipPath = req.file.path;
-    const zipBuffer = fs.readFileSync(zipPath);
-    const zip = await jszip.loadAsync(zipBuffer);
 
-    // Verificar se tem manifesto
-    const manifestoFile = zip.file('manifesto-SIP.json') || zip.file('manifesto-SIP.xml');
-    if (!manifestoFile) {
-      return res.status(400).json({ error: 'Ficheiro manifesto-SIP.(json|xml) não encontrado.' });
-    }
-
-    // Ler o manifesto
-    let metadata;
-    const manifestoContent = await manifestoFile.async('string');
-    if (manifestoFile.name.endsWith('.json')) {
-      metadata = JSON.parse(manifestoContent);
-    } else {
-      const parsed = await xml2js.parseStringPromise(manifestoContent);
-      metadata = parsed;
-    }
-
-    const tipo = metadata.tipo; // ex: "viagem"
-
-    if (!CLASSIFICADORES_VALIDOS.includes(tipo)) {
-      return res.status(400).json({
-        error: 'Tipo inválido no manifesto. Deve ser um dos: ' + CLASSIFICADORES_VALIDOS.join(', ')
-      });
-    }
-
-    // Criar pasta destino: public/fileStore/<user_id>/<item_id>/
-    const itemUUID = uuidv4();
-    console.log(itemUUID);
-    console.log(req.user);
-    const destFolder = path.join('public', 'fileStore', req.user.username, itemUUID);
-    console
-    fs.mkdirSync(destFolder, { recursive: true });
-
-    // Extrair os ficheiros (exceto o manifesto)
-    for (const name of Object.keys(zip.files)) {
-      if (!name.startsWith('manifesto-SIP')) {
-        const content = await zip.file(name).async('nodebuffer');
-        const filePath = path.join(destFolder, path.basename(name));
-        fs.writeFileSync(filePath, content);
+//  THIS IS THE INGEST!
+router.post('/uploadZip', Auth.validate, upload.single('file'), (req, res) => {
+  itemController.ingest(req.file.path, req.user.username)
+    .then(result => {
+      if(result) { //function returns null if everything is okay!
+        res.status(400).json(result)
       }
-    }
-
-    // Criar item
-    const itemData = {
-      title: metadata.title || 'Pacote ZIP',
-      type: 'zip',
-      file: destFolder.replace(/\\/g, '/'),
-      metadata: metadata,
-      classificadores: [tipo],
-      owner: req.user.username,
-      isPublic: metadata.public === true, // default: false se não vier nada
-      creationDate: new Date()
-    };
-
-    const result = await itemController.create(itemData);
-    res.status(201).jsonp(result);
-  } catch (err) {
-    console.error('Erro ao processar ZIP:', err);
-    res.status(500).json({ error: 'Erro ao processar ficheiro ZIP' });
-  }
+      else {
+        res.status(201).json({message: "Post created successfully!"})
+      }
+    })
+    .catch(err => {
+      res.status(500).json({error: err})
+    })
 });
 
 
 // GET item as ZIP (DIP) PS: I think this works, it might or it might not ERRO!!!!!!!!!!!!!!!!!!!!!!!!!!
-router.get('/:id/download', Auth.validate, function(req, res, next) {
+router.get('/:id/download', Auth.validate, async function(req, res, next) {
   //console.log('GET /items/' + req.params.id + '/download');
 
-  itemController.findById(req.params.id, req.user.username)
+  /* itemController.findById(req.params.id, req.user.username)
     .then(async (item) => {
       if (!item || item.type !== 'zip') {
         return res.status(404).jsonp({ error: 'Item não encontrado ou inválido.' });
@@ -177,7 +128,46 @@ router.get('/:id/download', Auth.validate, function(req, res, next) {
     .catch(err => {
       console.error('Erro ao gerar ZIP do item:', err);
       res.status(500).jsonp({ error: 'Erro ao gerar ZIP do item.' });
-    });
+    }); */
+
+  try {
+    let post = await itemController.findById(req.params.id, req.user.username)
+    const zip = new jszip() //this is the zip file we'll be sending back to the user
+
+    //create the manifesto-DIP.json??
+    zip.file('manifesto-DIP.json', JSON.stringify(post))
+
+    let document_ids = post.files
+
+    let docs = []
+
+    for (d_id of document_ids) {
+      let doc = await documentModel.findById(d_id).exec()
+      docs.push(doc)
+    }
+
+    for (const doc of docs) {
+      //now we're looping through each document of the post
+      //means we can actually have the metadata and the path to the file in the store
+      let metadata = {
+        mimetype: doc.mimetype,
+        lastModified: doc.lastModified
+      }
+
+      let fileData = await fs.promises.readFile(doc.path)
+
+      zip.file(`data/${doc.name}`, fileData)
+      zip.file(`data/meta/${doc.name}.json`, JSON.stringify(metadata))
+    }
+
+    let zipData = await zip.generateAsync({type : 'nodebuffer'})
+    res.status(200).set({
+      'Content-Type': 'application/zip'
+    }).send(zipData)
+  } catch(err) {
+    console.log(err)
+    res.status(500).json({error: err})
+  }
 });
 
 

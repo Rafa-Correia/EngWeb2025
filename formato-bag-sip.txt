@@ -1,0 +1,15 @@
+SIP -> Bag de BagIt em ZIP.
+
+bag |
+    | manifesto-SIP.json        < -- manifesto do SIP contendo o titulo, descricao, n ficheiros, etc
+    | bagit.txt                 < -- versao e encoding da bag
+    | manifest-sha256.txt       < -- checksums para todos os ficheiros dentro de .\data
+    | data |
+           | file1.txt          < -- files
+           | file2.jpg
+           | ...
+           | meta |
+                  | file1.txt.json  < -- metadata for files (must have same name)
+                  | file2.jpg.json
+                  | ...
+    

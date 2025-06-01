@@ -1,5 +1,9 @@
 extends layout 
 
+block head 
+    script(type="text/javascript", src="/javascripts/jquery-3.7.1.min.js")
+    script(type="text/javascript", src="/javascripts/diaryEntryForm.js")
+
 block content 
     form(method="POST") 
         label(for="title") Post Title

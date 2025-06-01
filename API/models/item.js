@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
+const documentSchema = require('./document')
 
 var itemSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: String,
-    type: { type: String, required: true },
-    file : String,
+    files : [{type: mongoose.Schema.Types.ObjectId, ref: 'document'}],
     creationDate: { type: Date, default: Date.now },
     owner : String,
     classificadores : [String],
@@ -13,7 +13,6 @@ var itemSchema = new mongoose.Schema({
         text: { type: String, required: true },
         date: { type: Date, default: Date.now }
     }],
-    metadata : mongoose.Schema.Types.Mixed
 }, {versionKey : false})
 
 module.exports = mongoose.model('item', itemSchema);
