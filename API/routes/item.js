@@ -41,6 +41,51 @@ router.get('/public/items/:id', async function(req, res) {
   }
 });
 
+router.get('/public/:id/download', async function(req, res, next) {
+  try {
+    let post = await itemController.findPublic(req.params.id)
+    if(!post) {
+      res.status(404).json({message: 'Not found.'})
+      return
+    }
+    const zip = new jszip() //this is the zip file we'll be sending back to the user
+
+    //create the manifesto-DIP.json??
+    zip.file('manifesto-DIP.json', JSON.stringify(post))
+
+    let document_ids = post.files
+
+    let docs = []
+
+    for (d_id of document_ids) {
+      let doc = await documentModel.findById(d_id).exec()
+      docs.push(doc)
+    }
+
+    for (const doc of docs) {
+      //now we're looping through each document of the post
+      //means we can actually have the metadata and the path to the file in the store
+      let metadata = {
+        mimetype: doc.mimetype,
+        lastModified: doc.lastModified
+      }
+
+      let fileData = await fs.promises.readFile(doc.path)
+
+      zip.file(`data/${doc.name}`, fileData)
+      zip.file(`data/meta/${doc.name}.json`, JSON.stringify(metadata))
+    }
+
+    let zipData = await zip.generateAsync({type : 'nodebuffer'})
+    res.status(200).set({
+      'Content-Type': 'application/zip'
+    }).send(zipData)
+  } catch(err) {
+    console.log(err)
+    res.status(500).json({error: err})
+  }
+})
+
 
 // GET items
 router.get('/', Auth.validate, function(req, res, next) {
@@ -99,6 +144,11 @@ router.get('/:id/download', Auth.validate, async function(req, res, next) {
 
   try {
     let post = await itemController.findById(req.params.id, req.user.username)
+
+    if(!post) {
+      res.status(404).json({message: 'Not found.'})
+      return
+    }
     const zip = new jszip() //this is the zip file we'll be sending back to the user
 
     //create the manifesto-DIP.json??
@@ -183,9 +233,9 @@ router.post('/:id/comments', Auth.validate, async (req, res) => {
   }
 
   try {
-    const item = await itemController.addComment(req.params.id, req.user.username, text);
+    const item = await itemController.addComment(req.params.id, text);
     if (!item) {
-      return res.status(404).json({ error: 'Item não encontrado ou não pertence ao utilizador.' });
+      return res.status(404).json({ error: 'Item não encontrado.' });
     }
 
     res.status(200).json({ message: 'Comentário adicionado.', item: item });

@@ -29,10 +29,10 @@ block content
 
         label.w3-text-grey(for="isPublic") Visibilidade
         select.w3-select(id="isPublic" name="isPublic" required)
-            option(value="true") Publico 
-            option(value="false" selected) Privado
+            option(value="t") Publico 
+            option(value="f" selected) Privado
 
         label.w3-text-grey(for="file") Ficheiro (teste for now, this is not yet dynamic or anything)
-        input.w3-input.w3-border.w3-margin-bottom(type="file" id="file" name="uploads")  
+        input.w3-input.w3-border.w3-margin-bottom(type="file" id="file" name="uploads" multiple)  
 
         button(type="submit" class="w3-button w3-blue w3-round-large") Publicar
