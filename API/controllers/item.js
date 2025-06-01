@@ -206,9 +206,10 @@ module.exports.ingest = async (zipPath, username) => {
 
       const doc = new document({
         name: file_name,
+        originalName: metadata.originalName,
         path: filepath_curated,
         mimetype: metadata.mimetype,
-        lastModified: metadata.lastModified
+        size: metadata.size
       })
 
       documents.push(doc)

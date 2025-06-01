@@ -74,9 +74,12 @@ router.get('/:id', Auth.validate, function(req, res, next) {
 
 //  THIS IS THE INGEST!
 router.post('/uploadZip', Auth.validate, upload.single('file'), (req, res) => {
+  console.log('Calling ingest...')
   itemController.ingest(req.file.path, req.user.username)
     .then(result => {
+      console.log('Done!')
       if(result) { //function returns null if everything is okay!
+        console.log(result)
         res.status(400).json(result)
       }
       else {
@@ -84,6 +87,7 @@ router.post('/uploadZip', Auth.validate, upload.single('file'), (req, res) => {
       }
     })
     .catch(err => {
+      console.log(err)
       res.status(500).json({error: err})
     })
 });

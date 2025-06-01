@@ -8,12 +8,31 @@ block content
   .w3-container.w3-padding
     h2.w3-center Nova Entrada no Diário
 
-    form(method="POST" class="w3-card w3-white w3-round-large w3-padding w3-margin-top")
+    form(method="POST" class="w3-card w3-white w3-round-large w3-padding w3-margin-top", enctype="multipart/form-data")
 
-      label(for="title" class="w3-text-grey") Título do Post
-      input(class="w3-input w3-border w3-margin-bottom" type="text" id="title" name="title" required placeholder="Este é um título")
+        label(for="title" class="w3-text-grey") Título do Post
+        input.w3-input.w3-border.w3-margin-bottom(type="text" id="title" name="title" required placeholder="Este é um título")  
 
-      label(for="desc" class="w3-text-grey") Descrição
-      input(class="w3-input w3-border w3-margin-bottom" type="text" id="desc" name="desc" placeholder="Descrição")
+        label.w3-text-grey(for="desc") Descrição
+        input.w3-input.w3-border.w3-margin-bottom(type="text" id="desc" name="desc" placeholder="Descrição")    
 
-      button(type="submit" class="w3-button w3-blue w3-round-large") Publicar
+        label.w3-text-grey(for="tipo") Tipo de Post
+        select.w3-select(id="tipo" name="tipo" required)
+            option(value="texto" selected) Texto
+            option(value="foto") Fotos
+            option(value="viagem") Viagem
+            option(value="trabalho") Trabalho
+            option(value="formacao") Formacao
+            option(value="evento") Evento
+            option(value="desporto") Desporto 
+            option(value="saude") Saude   
+
+        label.w3-text-grey(for="isPublic") Visibilidade
+        select.w3-select(id="isPublic" name="isPublic" required)
+            option(value="true") Publico 
+            option(value="false" selected) Privado
+
+        label.w3-text-grey(for="file") Ficheiro (teste for now, this is not yet dynamic or anything)
+        input.w3-input.w3-border.w3-margin-bottom(type="file" id="file" name="uploads")  
+
+        button(type="submit" class="w3-button w3-blue w3-round-large") Publicar
