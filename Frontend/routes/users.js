@@ -58,14 +58,23 @@ router.post('/login', (req, res, next) => {
       else {
         console.log("Success!")
         res.status(200)
-        res.cookie('jwt', response.data.token, {maxAge:86400000, httpOnly: true})
-        res.jsonp({status: "Success!"}) //86'400'000 ms is 1 day!
+        res.cookie('jwt', response.data.token, {maxAge:86400000, httpOnly: false}) //86'400'000 ms is 1 day!
+        res.redirect('/')
       }
     })
     .catch(err => {
       res.render('error', {error : err})
       console.log('Something went wrong when loging user in...')
     })
+})
+
+router.post('/logout', (req, res, next) => {
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/'
+  })
+  res.sendStatus(200)
 })
 
 module.exports = router;

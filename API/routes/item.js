@@ -93,43 +93,6 @@ router.post('/uploadZip', Auth.validate, upload.single('file'), (req, res) => {
 router.get('/:id/download', Auth.validate, async function(req, res, next) {
   //console.log('GET /items/' + req.params.id + '/download');
 
-  /* itemController.findById(req.params.id, req.user.username)
-    .then(async (item) => {
-      if (!item || item.type !== 'zip') {
-        return res.status(404).jsonp({ error: 'Item não encontrado ou inválido.' });
-      }
-
-      logger.logAction(req.user.username, 'download', req.params.id);
-
-      const zip = new jszip();
-      zip.file('manifesto-SIP.json', JSON.stringify(item.metadata, null, 2));
-
-      const basePath = path.join(__dirname, '..', item.file);
-
-      try {
-        const files = await fs.promises.readdir(basePath);
-        for (const f of files) {
-          const content = await fs.promises.readFile(path.join(basePath, f));
-          zip.file(f, content);
-        }
-      } catch (fsErr) {
-        console.error('Erro a ler os ficheiros do item:', fsErr);
-        return res.status(500).jsonp({ error: 'Erro a ler os ficheiros do item.' });
-      }
-
-      const buffer = await zip.generateAsync({ type: 'nodebuffer' });
-
-      res.set({
-        'Content-Type': 'application/zip',
-        'Content-Disposition': `attachment; filename="DIP-${item._id}.zip"`
-      });
-      res.send(buffer);
-    })
-    .catch(err => {
-      console.error('Erro ao gerar ZIP do item:', err);
-      res.status(500).jsonp({ error: 'Erro ao gerar ZIP do item.' });
-    }); */
-
   try {
     let post = await itemController.findById(req.params.id, req.user.username)
     const zip = new jszip() //this is the zip file we'll be sending back to the user

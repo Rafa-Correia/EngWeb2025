@@ -8,3 +8,20 @@ block content
   a(href="/users/login") Login
   br
   a(href='/diary') Diary
+
+
+
+block head
+  script(src='javascripts/index.js')
+
+block content
+
+    // navbar
+    .w3-bar.w3-dark-grey.w3-padding
+      //a.w3-bar-item.w3-button.w3-hover-none.w3-hover-text-white.w3-text-white(href='/diary') Personal Diary
+      span.w3-bar-item.w3-right(id='nav-buttons')
+
+    // actual main page
+    main.w3-container.w3-center.w3-padding-64
+      h1.w3-jumbo Personal Diary
+      button.w3-button.w3-teal.w3-large.w3-margin-top.w3-round(id="diary-route-button",onclick='window.location.href="/diary"') Diary

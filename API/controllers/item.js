@@ -16,7 +16,7 @@ module.exports.findAll = (userId, classificador) => {
     filtro.classificadores = classificador;
   }
 
-  return item.find(filtro).exec();
+  return item.find(filtro).sort({creationDate: 1}).exec();
 }
 
 

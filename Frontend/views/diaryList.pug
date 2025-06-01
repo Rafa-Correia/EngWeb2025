@@ -6,14 +6,16 @@ block content
             h1 
                 span Lista de Entradas
 
-        .w3-container
-            table.w3-table-all
-                tr 
-                    th Title    
-                    th Descricao
-                each item in diaryEntries
-                    tr
-                        td= item.title
-                        td= item.metadata.descricao
+    .w3-container
+        table.w3-table-all
+            tr 
+                th Title    
+                th Descricao
+                th Data de criacao
+            each item in diaryEntries
+                tr
+                    td= item.title
+                    td= item.description
+                    td= item.creationDate
 
     a(href="/diary/create") Create a post
