@@ -250,7 +250,7 @@ router.post('/:id/comments', Auth.validate, async (req, res) => {
 router.get('/:id/comments', Auth.validate, function(req, res, next) {
   console.log('GET /items/' + req.params.id + '/comments');
 
-  itemController.findById(req.params.id, req.user.username)
+  itemController.findPublicById(req.params.id)
     .then(item => {
       if (item) {
         res.status(200).jsonp(item.comments);
