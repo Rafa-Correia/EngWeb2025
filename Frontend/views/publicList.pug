@@ -27,4 +27,4 @@ block content
             td.truncate
               a(href=`/diary/public/${item._id}`, class="w3-text-blue w3-hover-text-indigo")= item.title
             td.truncate= item.description
-            td.truncate= item.creationDate
+            td.truncate= new Date(item.creationDate).toISOString().slice(0, 19).replace('T', ', ')

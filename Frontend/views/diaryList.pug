@@ -30,7 +30,7 @@ block content
               a(href=`/diary/${item._id}`, class="w3-text-blue w3-hover-text-indigo")= item.title
             td.truncate= item.description
             td= item.isPublic ? 'Público' : 'Privado'
-            td.truncate= item.creationDate
+            td.truncate= new Date(item.creationDate).toISOString().slice(0, 19).replace('T', ', ')
             td
                 form(method="POST", action=`/diary/${item._id}/delete`, onsubmit="return confirm('Tens a certeza que queres eliminar este item?');")
                     button(type="submit", class="w3-button w3-red w3-small w3-round") Delete

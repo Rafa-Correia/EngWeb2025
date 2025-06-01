@@ -20,7 +20,7 @@ block content
 
       p
         strong Data de Criação:
-        |  #{item.creationDate}
+        |  #{new Date(item.creationDate).toISOString().slice(0, 19).replace('T', ', ')}
 
       if item.classificadores.length
         p
